@@ -1,0 +1,115 @@
+/* General body styles */
+body {
+    background-color: #f5f5f5;
+    font-family: 'Arial', sans-serif;
+    color: #333;
+    margin: 0;
+    padding: 0;
+   
+}
+
+/* Header Section */
+.header-title {
+    color: #8B0000; /* Dark Red */
+    text-align: center;
+    font-size: 3rem;
+    margin-top: 20px;
+    font-weight: bold;
+}
+
+.header-description {
+    text-align: center;
+    font-size: 1.2rem;
+    color: #555;
+    margin-bottom: 40px;
+}
+
+/* Image */
+.header-image {
+    width: 100px;
+    height: 100px;
+    display: flex;
+    justify-content: center;
+    object-fit: cover;
+}
+
+/* Dropdowns */
+select, .react-dropdown-select {
+    width: 100%;
+    padding: 10px;
+    border: 2px solid #8B0000; /* Dark Red */
+    border-radius: 8px;
+    background-color: white;
+    font-size: 1rem;
+}
+
+select:focus, .react-dropdown-select:focus {
+    outline: none;
+    border-color: #B22222; /* Firebrick */
+}
+
+label {
+    font-weight: bold;
+    margin-bottom: 8px;
+    font-size: 1.1rem;
+}
+
+/* Graphs */
+.container {
+    padding: 20px;
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.dcc-graph {
+    margin: 20px 0;
+}
+
+/* Food Suggestions */
+.food-suggestions {
+    margin-top: 20px;
+    padding: 15px;
+    background-color: #FFFAFA;
+    border-radius: 8px;
+    border: 1px solid #FF6347; /* Tomato */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.food-suggestions ul {
+    padding-left: 20px;
+}
+
+.food-suggestions h4 {
+    color: #8B0000;
+}
+
+/* Button */
+button {
+    padding: 10px 20px;
+    background-color: #8B0000;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #B22222; /* Firebrick */
+}
+
+/* Layout and Responsiveness */
+@media (max-width: 768px) {
+    .header-title {
+        font-size: 2rem;
+    }
+    .container {
+        padding: 15px;
+    }
+    .dcc-graph {
+        width: 100%;
+    }
+    label, select {
+        font-size: 1rem;
+    }
+}
