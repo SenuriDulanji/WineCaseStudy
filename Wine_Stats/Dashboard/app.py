@@ -1,4 +1,4 @@
-import pandas as pd
+﻿import pandas as pd
 from dash import Dash, dcc, html, Input, Output
 import plotly.graph_objs as go
 import plotly.express as px
@@ -25,7 +25,9 @@ app.layout = html.Div([
     html.H1("Wine Analytics", className="header-title"),
     html.P("Explore the highest-rated wines by country. Discover which wine names stand out!", className="header-description"),
 
-    # Dropdowns
+    # Dropdowns in dashboard
+
+    #Country Dropdown
     html.Div([
         html.Label('Select a Country:'),
         dcc.Dropdown(
@@ -35,6 +37,7 @@ app.layout = html.Div([
         )
     ], style={'margin-bottom': '20px'}),
 
+    #Region Dropdown
     html.Div([
         html.Label('Select a Region:'),
         dcc.Dropdown(
@@ -51,6 +54,7 @@ app.layout = html.Div([
     dcc.Graph(id='scatter2-graph'),
     dcc.Graph(id='boxplot-graph'),
 
+    #Wine Dropdown
     html.Div([
         html.Label('Select a Wine:'),
         dcc.Dropdown(
@@ -60,6 +64,7 @@ app.layout = html.Div([
     ], style={'margin-bottom': '20px'}),
     dcc.Graph(id='taste-pie-chart'),
 
+    #Winery DropDown
     html.Div([
         html.Label('Select a Winery:'),
         dcc.Dropdown(
@@ -69,13 +74,11 @@ app.layout = html.Div([
     ], style={'margin-bottom': '20px'}),
     html.Div(id='country-food-suggestions'),
 
+    #Graphs
     dcc.Graph(id='food-heatmap'),
     dcc.Graph(id='top-foods-bar-chart'),
 ], className="container")
 
-# -----------------------------------
-# Callbacks
-# -----------------------------------
 
 # Update regions when a country is selected
 @app.callback(
@@ -119,7 +122,7 @@ def update_wine_dropdown(selected_country, selected_region):
         return [{'label': wine, 'value': wine} for wine in sorted(wines)]
     return []
 
-# Callback to update graphs
+
 @app.callback(
     [Output('Alcohol-content-graph', 'figure'),
      Output('Number-of-Ratings-graph', 'figure'),
@@ -136,6 +139,7 @@ def update_wine_dropdown(selected_country, selected_region):
      Input('wine-dropdown', 'value'),
      Input('winery-dropdown', 'value')]
 )
+
 def update_graphs(selected_country, selected_region, selected_wine, selected_winery):
     filtered_data = data[data["Country"] == selected_country]
 
