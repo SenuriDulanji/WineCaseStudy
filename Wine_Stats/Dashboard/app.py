@@ -53,6 +53,7 @@ app.layout = html.Div([
     dcc.Graph(id='Number-of-Ratings-graph'),
     dcc.Graph(id='scatter1-graph'),
     dcc.Graph(id='scatter2-graph'),
+    dcc.Graph(id='boxplot-graph'),
 
     html.Div([
         html.Label('Select a Wine:'),
@@ -72,7 +73,7 @@ app.layout = html.Div([
     ], style={'margin-bottom': '20px'}),
     html.Div(id='country-food-suggestions'),
 
-   
+    
 ], className="container")
 
 # -----------------------------------
@@ -127,9 +128,10 @@ def update_wine_dropdown(selected_country, selected_region):
      Output('Number-of-Ratings-graph', 'figure'),
      Output('scatter1-graph', 'figure'),
      Output('scatter2-graph', 'figure'),
+     Output('boxplot-graph', 'figure'),
      Output('taste-pie-chart', 'figure'),
      Output('country-food-suggestions', 'children'),
-    ],
+     ],
     
     [Input('country-dropdown', 'value'),
      Input('region-dropdown', 'value'),
@@ -227,6 +229,25 @@ def update_graphs(selected_country, selected_region, selected_wine, selected_win
         )
     }
 
+    # Boxplot for Price Distribution
+    price_figure = {
+        "data": [
+            go.Box(
+                y=filtered_data["Price"],
+                name=selected_country,
+                boxpoints='all',
+                jitter=0.5,
+                pointpos=-1.8,
+                marker=dict(color='orange'),
+                line=dict(color='black')
+            )
+        ],
+        "layout": go.Layout(
+            title=f"Wine Price Distribution in {selected_country}",
+            yaxis_title="Price (USD)",
+            showlegend=False
+        )
+    }
 
     # Taste Pie Chart
     if selected_wine:
@@ -256,9 +277,9 @@ def update_graphs(selected_country, selected_region, selected_wine, selected_win
             html.H4(f"🍷 Food Suggestions for {selected_winery or selected_country}:", className="food-suggestions-h4"),
             html.Ul([html.Li(food) for food in food_suggestions])
         ], style={"marginTop": "20px"}, className="food-suggestions")
+ 
+    return AlcoholContent_figure, noOfRating_figure,scatter1_figure, scatter2_figure, price_figure, pie_figure, food_suggestions_div
 
-
-    return AlcoholContent_figure, noOfRating_figure,scatter1_figure, scatter2_figure, pie_figure, food_suggestions_div
 # Run the app
 if __name__ == '__main__':
     app.run(debug=True)
