@@ -25,7 +25,6 @@ app.layout = html.Div([
     html.H1("Wine Analytics", className="header-title"),
     html.P("Explore the highest-rated wines by country. Discover which wine names stand out!", className="header-description"),
 
-
     # Dropdowns
     html.Div([
          html.Div([
@@ -53,7 +52,8 @@ app.layout = html.Div([
     dcc.Graph(id='Alcohol-content-graph'),
     dcc.Graph(id='Number-of-Ratings-graph'),
     dcc.Graph(id='scatter1-graph'),
-    
+    dcc.Graph(id='scatter2-graph'),
+
     html.Div([
         html.Label('Select a Wine:'),
         dcc.Dropdown(
@@ -72,6 +72,7 @@ app.layout = html.Div([
     ], style={'margin-bottom': '20px'}),
     html.Div(id='country-food-suggestions'),
 
+   
 ], className="container")
 
 # -----------------------------------
@@ -125,9 +126,10 @@ def update_wine_dropdown(selected_country, selected_region):
     [Output('Alcohol-content-graph', 'figure'),
      Output('Number-of-Ratings-graph', 'figure'),
      Output('scatter1-graph', 'figure'),
+     Output('scatter2-graph', 'figure'),
      Output('taste-pie-chart', 'figure'),
      Output('country-food-suggestions', 'children'),
-     ],
+    ],
     
     [Input('country-dropdown', 'value'),
      Input('region-dropdown', 'value'),
@@ -204,6 +206,27 @@ def update_graphs(selected_country, selected_region, selected_wine, selected_win
         )
     }
 
+     # Scatter plot Alcohol Content vs Price
+    scatter2_figure = {
+        "data": [
+            go.Scatter(
+                x=filtered_data["Alcohol content"],
+                y=filtered_data["Price"],
+                mode='markers',
+                marker=dict(color='purple', size=8, opacity=0.7, line=dict(width=1, color='black')),
+                text=filtered_data["Name"],
+                hovertemplate="Wine: %{text}<br>Alcohol content: %{x}<br>Price: $%{y:.2f}<extra></extra>",
+                name="Wines"
+            )
+        ],
+        "layout": go.Layout(
+            title=f"Alcohol content vs Price in {selected_country}",
+            xaxis_title="Alcohol content",
+            yaxis_title="Price (USD)",
+            hovermode="closest"
+        )
+    }
+
 
     # Taste Pie Chart
     if selected_wine:
@@ -235,8 +258,7 @@ def update_graphs(selected_country, selected_region, selected_wine, selected_win
         ], style={"marginTop": "20px"}, className="food-suggestions")
 
 
-    return AlcoholContent_figure, noOfRating_figure,scatter1_figure,  pie_figure, food_suggestions_div
-
+    return AlcoholContent_figure, noOfRating_figure,scatter1_figure, scatter2_figure, pie_figure, food_suggestions_div
 # Run the app
 if __name__ == '__main__':
     app.run(debug=True)
