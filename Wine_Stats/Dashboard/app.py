@@ -4,7 +4,7 @@ import plotly.graph_objs as go
 import plotly.express as px
 
 # Load the wine data
-data = pd.read_csv("Cleared winestats.csv")
+data = pd.read_csv("Outputs\Cleared winestats.csv")
 
 # List of food columns (everything after Country_region)
 food_columns = list(data.columns)
@@ -154,7 +154,7 @@ def update_graphs(selected_country, selected_region, selected_wine, selected_win
         winery_data = filtered_data
 
     # Alcohol content graph
-    AlcoholContent_figure = {
+    alcohol_content_fig = {
         "data": [
             go.Scatter(
                 x=filtered_data["Name"],
@@ -165,14 +165,14 @@ def update_graphs(selected_country, selected_region, selected_wine, selected_win
             )
         ],
         "layout": go.Layout(
-            title=f"Alcohol Content of Wines in {selected_country}",
+            title=f"Alcohol Content of Wines in {selected_region if selected_region else selected_country}",
             xaxis_title="Wine Name",
             yaxis_title="Alcohol Content (%)",
         )
     }
 
     # Number of ratings graph
-    noOfRating_figure = {
+    ratings_count_fig = {
         "data": [
             go.Scatter(
                 x=filtered_data["Name"],
@@ -183,14 +183,14 @@ def update_graphs(selected_country, selected_region, selected_wine, selected_win
             )
         ],
         "layout": go.Layout(
-            title=f"Popularity of Wines in {selected_country}",
+            title=f"Popularity of Wines in {selected_region if selected_region else selected_country}",
             xaxis_title="Wine Name",
             yaxis_title="Number of Ratings",
         )
     }
 
     # Scatter plot Rating vs Price
-    scatter1_figure = {
+    rating_vs_price_fig= {
         "data": [
             go.Scatter(
                 x=filtered_data["Rating"],
@@ -203,7 +203,7 @@ def update_graphs(selected_country, selected_region, selected_wine, selected_win
             )
         ],
         "layout": go.Layout(
-            title=f"Wine Rating vs Price in {selected_country}",
+            title=f"Wine Rating vs Price in {selected_region if selected_region else selected_country}",
             xaxis_title="Rating",
             yaxis_title="Price (USD)",
             hovermode="closest"
@@ -211,7 +211,7 @@ def update_graphs(selected_country, selected_region, selected_wine, selected_win
     }
 
      # Scatter plot Alcohol Content vs Price
-    scatter2_figure = {
+    alcohol_vs_price_fig = {
         "data": [
             go.Scatter(
                 x=filtered_data["Alcohol content"],
@@ -224,19 +224,19 @@ def update_graphs(selected_country, selected_region, selected_wine, selected_win
             )
         ],
         "layout": go.Layout(
-            title=f"Alcohol content vs Price in {selected_country}",
+            title=f"Alcohol content vs Price in {selected_region if selected_region else selected_country}",
             xaxis_title="Alcohol content",
             yaxis_title="Price (USD)",
             hovermode="closest"
         )
     }
 
-    # Boxplot for Price Distribution
-    price_figure = {
+   # Boxplot for Price Distribution
+    price_boxplot_fig = {
         "data": [
             go.Box(
                 y=filtered_data["Price"],
-                name=selected_country,
+                name=selected_region if selected_region else selected_country,
                 boxpoints='all',
                 jitter=0.5,
                 pointpos=-1.8,
@@ -245,11 +245,12 @@ def update_graphs(selected_country, selected_region, selected_wine, selected_win
             )
         ],
         "layout": go.Layout(
-            title=f"Wine Price Distribution in {selected_country}",
+            title=f"Wine Price Distribution in {selected_region if selected_region else selected_country}",
             yaxis_title="Price (USD)",
             showlegend=False
         )
     }
+
 
     # Taste Pie Chart
     if selected_wine:
@@ -259,12 +260,12 @@ def update_graphs(selected_country, selected_region, selected_wine, selected_win
             labels = ['Bold', 'Tannin', 'Sweet', 'Acidic']
             values = [wine_row['Bold'], wine_row['Tannin'], wine_row['Sweet'], wine_row['Acidic']]
 
-            pie_figure = go.Figure(data=[go.Pie(labels=labels, values=values, hole=0.3)])
-            pie_figure.update_layout(title_text=f"Taste Profile: {selected_wine}")
+            taste_pie_fig = go.Figure(data=[go.Pie(labels=labels, values=values, hole=0.3)])
+            taste_pie_fig.update_layout(title_text=f"Taste Profile: {selected_wine}")
         else:
-            pie_figure = go.Figure()
+            taste_pie_fig = go.Figure()
     else:
-        pie_figure = go.Figure()
+        taste_pie_fig = go.Figure()
 
     # Food Suggestions
     food_suggestions = []
@@ -284,14 +285,14 @@ def update_graphs(selected_country, selected_region, selected_wine, selected_win
     # Food Heatmap
     heatmap_data = data.groupby('Country')[food_columns].sum()
 
-    heatmap_figure = px.imshow(
+    heatmap_figure  = px.imshow(
         heatmap_data.T,
         labels=dict(x="Country", y="Food", color="Number of Wines"),
         color_continuous_scale="Reds",
         aspect="auto",
     )
 
-    heatmap_figure.update_layout(
+    heatmap_figure .update_layout(
         title="🍽️ Food Pairing Popularity Across Countries",
         xaxis_title="Country",
         yaxis_title="Food",
@@ -303,7 +304,7 @@ def update_graphs(selected_country, selected_region, selected_wine, selected_win
     food_counts = filtered_data[food_columns].sum()
     top_foods = food_counts.sort_values(ascending=False).head(5)
 
-    bar_figure = go.Figure(data=[
+    top_foods_bar_fig = go.Figure(data=[
         go.Bar(
             x=top_foods.index,
             y=top_foods.values,
@@ -311,14 +312,14 @@ def update_graphs(selected_country, selected_region, selected_wine, selected_win
         )
     ])
 
-    bar_figure.update_layout(
+    top_foods_bar_fig.update_layout(
         title=f"🍽️ Top 5 Food Pairings for Wines from {selected_country}",
         xaxis_title="Food",
         yaxis_title="Number of Wines",
         height=500,
     )
 
-    return AlcoholContent_figure, noOfRating_figure,scatter1_figure, scatter2_figure, price_figure, pie_figure, food_suggestions_div, heatmap_figure, bar_figure
+    return alcohol_content_fig, ratings_count_fig,rating_vs_price_fig, alcohol_vs_price_fig, price_boxplot_fig, taste_pie_fig, food_suggestions_div, heatmap_figure , top_foods_bar_fig
 
 # Run the app
 if __name__ == '__main__':
