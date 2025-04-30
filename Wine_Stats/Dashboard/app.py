@@ -52,8 +52,8 @@ app.layout = html.Div([
     # Graphs
     dcc.Graph(id='Alcohol-content-graph'),
     dcc.Graph(id='Number-of-Ratings-graph'),
+    dcc.Graph(id='scatter1-graph'),
     
-
     html.Div([
         html.Label('Select a Wine:'),
         dcc.Dropdown(
@@ -72,7 +72,6 @@ app.layout = html.Div([
     ], style={'margin-bottom': '20px'}),
     html.Div(id='country-food-suggestions'),
 
-    
 ], className="container")
 
 # -----------------------------------
@@ -125,9 +124,10 @@ def update_wine_dropdown(selected_country, selected_region):
 @app.callback(
     [Output('Alcohol-content-graph', 'figure'),
      Output('Number-of-Ratings-graph', 'figure'),
+     Output('scatter1-graph', 'figure'),
      Output('taste-pie-chart', 'figure'),
      Output('country-food-suggestions', 'children'),
-    ],
+     ],
     
     [Input('country-dropdown', 'value'),
      Input('region-dropdown', 'value'),
@@ -183,6 +183,27 @@ def update_graphs(selected_country, selected_region, selected_wine, selected_win
         )
     }
 
+    # Scatter plot Rating vs Price
+    scatter1_figure = {
+        "data": [
+            go.Scatter(
+                x=filtered_data["Rating"],
+                y=filtered_data["Price"],
+                mode='markers',
+                marker=dict(color='purple', size=8, opacity=0.7, line=dict(width=1, color='black')),
+                text=filtered_data["Name"],
+                hovertemplate="Wine: %{text}<br>Rating: %{x}<br>Price: $%{y:.2f}<extra></extra>",
+                name="Wines"
+            )
+        ],
+        "layout": go.Layout(
+            title=f"Wine Rating vs Price in {selected_country}",
+            xaxis_title="Rating",
+            yaxis_title="Price (USD)",
+            hovermode="closest"
+        )
+    }
+
 
     # Taste Pie Chart
     if selected_wine:
@@ -214,7 +235,7 @@ def update_graphs(selected_country, selected_region, selected_wine, selected_win
         ], style={"marginTop": "20px"}, className="food-suggestions")
 
 
-    return AlcoholContent_figure, noOfRating_figure,pie_figure, food_suggestions_div, 
+    return AlcoholContent_figure, noOfRating_figure,scatter1_figure,  pie_figure, food_suggestions_div
 
 # Run the app
 if __name__ == '__main__':
