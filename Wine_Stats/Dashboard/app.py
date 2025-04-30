@@ -4,7 +4,7 @@ import plotly.graph_objs as go
 import plotly.express as px
 
 # Load the wine data
-data = pd.read_csv(".\Outputs\Cleared winestats.csv")
+data = pd.read_csv("Cleared winestats.csv")
 
 # List of food columns (everything after Country_region)
 food_columns = list(data.columns)
@@ -27,7 +27,6 @@ app.layout = html.Div([
 
     # Dropdowns
     html.Div([
-         html.Div([
         html.Label('Select a Country:'),
         dcc.Dropdown(
             id='country-dropdown',
@@ -43,9 +42,6 @@ app.layout = html.Div([
             placeholder="Select a Region"
         )
     ], style={'margin-bottom': '20px'}),
-
-    ],className = "Dropdowns1"),
-   
 
 
     # Graphs
@@ -74,7 +70,7 @@ app.layout = html.Div([
     html.Div(id='country-food-suggestions'),
 
     dcc.Graph(id='food-heatmap'),
-   
+    dcc.Graph(id='top-foods-bar-chart'),
 ], className="container")
 
 # -----------------------------------
@@ -133,7 +129,7 @@ def update_wine_dropdown(selected_country, selected_region):
      Output('taste-pie-chart', 'figure'),
      Output('country-food-suggestions', 'children'),
      Output('food-heatmap', 'figure'),
-     ],
+     Output('top-foods-bar-chart', 'figure')],
     
     [Input('country-dropdown', 'value'),
      Input('region-dropdown', 'value'),
@@ -299,9 +295,26 @@ def update_graphs(selected_country, selected_region, selected_wine, selected_win
         height=700,
     )
 
-   
+    # Top 5 Foods Bar Chart
+    food_counts = filtered_data[food_columns].sum()
+    top_foods = food_counts.sort_values(ascending=False).head(5)
 
-    return AlcoholContent_figure, noOfRating_figure,scatter1_figure, scatter2_figure, price_figure, pie_figure, food_suggestions_div, heatmap_figure
+    bar_figure = go.Figure(data=[
+        go.Bar(
+            x=top_foods.index,
+            y=top_foods.values,
+            marker_color='indianred'
+        )
+    ])
+
+    bar_figure.update_layout(
+        title=f"🍽️ Top 5 Food Pairings for Wines from {selected_country}",
+        xaxis_title="Food",
+        yaxis_title="Number of Wines",
+        height=500,
+    )
+
+    return AlcoholContent_figure, noOfRating_figure,scatter1_figure, scatter2_figure, price_figure, pie_figure, food_suggestions_div, heatmap_figure, bar_figure
 
 # Run the app
 if __name__ == '__main__':
