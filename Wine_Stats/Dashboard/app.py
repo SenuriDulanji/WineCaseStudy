@@ -73,7 +73,8 @@ app.layout = html.Div([
     ], style={'margin-bottom': '20px'}),
     html.Div(id='country-food-suggestions'),
 
-    
+    dcc.Graph(id='food-heatmap'),
+   
 ], className="container")
 
 # -----------------------------------
@@ -131,6 +132,7 @@ def update_wine_dropdown(selected_country, selected_region):
      Output('boxplot-graph', 'figure'),
      Output('taste-pie-chart', 'figure'),
      Output('country-food-suggestions', 'children'),
+     Output('food-heatmap', 'figure'),
      ],
     
     [Input('country-dropdown', 'value'),
@@ -277,8 +279,29 @@ def update_graphs(selected_country, selected_region, selected_wine, selected_win
             html.H4(f"🍷 Food Suggestions for {selected_winery or selected_country}:", className="food-suggestions-h4"),
             html.Ul([html.Li(food) for food in food_suggestions])
         ], style={"marginTop": "20px"}, className="food-suggestions")
- 
-    return AlcoholContent_figure, noOfRating_figure,scatter1_figure, scatter2_figure, price_figure, pie_figure, food_suggestions_div
+
+
+    # Food Heatmap
+    heatmap_data = data.groupby('Country')[food_columns].sum()
+
+    heatmap_figure = px.imshow(
+        heatmap_data.T,
+        labels=dict(x="Country", y="Food", color="Number of Wines"),
+        color_continuous_scale="Reds",
+        aspect="auto",
+    )
+
+    heatmap_figure.update_layout(
+        title="🍽️ Food Pairing Popularity Across Countries",
+        xaxis_title="Country",
+        yaxis_title="Food",
+        autosize=True,
+        height=700,
+    )
+
+   
+
+    return AlcoholContent_figure, noOfRating_figure,scatter1_figure, scatter2_figure, price_figure, pie_figure, food_suggestions_div, heatmap_figure
 
 # Run the app
 if __name__ == '__main__':
