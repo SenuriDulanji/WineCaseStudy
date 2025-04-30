@@ -4,7 +4,7 @@ import plotly.graph_objs as go
 import plotly.express as px
 
 # Load the wine data
-data = pd.read_csv("Wine_Stats\Outputs\Cleared winestats.csv")
+data = pd.read_csv(".\Outputs\Cleared winestats.csv")
 
 # List of food columns (everything after Country_region)
 food_columns = list(data.columns)
@@ -25,8 +25,10 @@ app.layout = html.Div([
     html.H1("Wine Analytics", className="header-title"),
     html.P("Explore the highest-rated wines by country. Discover which wine names stand out!", className="header-description"),
 
+
     # Dropdowns
     html.Div([
+         html.Div([
         html.Label('Select a Country:'),
         dcc.Dropdown(
             id='country-dropdown',
@@ -43,11 +45,15 @@ app.layout = html.Div([
         )
     ], style={'margin-bottom': '20px'}),
 
+    ],className = "Dropdowns1"),
+   
+
 
     # Graphs
     dcc.Graph(id='Alcohol-content-graph'),
+    dcc.Graph(id='Number-of-Ratings-graph'),
+    dcc.Graph(id='scatter1-graph'),
     
-
     html.Div([
         html.Label('Select a Wine:'),
         dcc.Dropdown(
@@ -117,9 +123,11 @@ def update_wine_dropdown(selected_country, selected_region):
 # Callback to update graphs
 @app.callback(
     [Output('Alcohol-content-graph', 'figure'),
+     Output('Number-of-Ratings-graph', 'figure'),
+     Output('scatter1-graph', 'figure'),
      Output('taste-pie-chart', 'figure'),
      Output('country-food-suggestions', 'children'),
-    ],
+     ],
     
     [Input('country-dropdown', 'value'),
      Input('region-dropdown', 'value'),
@@ -157,7 +165,45 @@ def update_graphs(selected_country, selected_region, selected_wine, selected_win
         )
     }
 
-   
+    # Number of ratings graph
+    noOfRating_figure = {
+        "data": [
+            go.Scatter(
+                x=filtered_data["Name"],
+                y=filtered_data["Number of Ratings"],
+                mode='lines+markers',
+                line=dict(color='red'),
+                name='Number of Ratings'
+            )
+        ],
+        "layout": go.Layout(
+            title=f"Popularity of Wines in {selected_country}",
+            xaxis_title="Wine Name",
+            yaxis_title="Number of Ratings",
+        )
+    }
+
+    # Scatter plot Rating vs Price
+    scatter1_figure = {
+        "data": [
+            go.Scatter(
+                x=filtered_data["Rating"],
+                y=filtered_data["Price"],
+                mode='markers',
+                marker=dict(color='purple', size=8, opacity=0.7, line=dict(width=1, color='black')),
+                text=filtered_data["Name"],
+                hovertemplate="Wine: %{text}<br>Rating: %{x}<br>Price: $%{y:.2f}<extra></extra>",
+                name="Wines"
+            )
+        ],
+        "layout": go.Layout(
+            title=f"Wine Rating vs Price in {selected_country}",
+            xaxis_title="Rating",
+            yaxis_title="Price (USD)",
+            hovermode="closest"
+        )
+    }
+
 
     # Taste Pie Chart
     if selected_wine:
@@ -189,8 +235,7 @@ def update_graphs(selected_country, selected_region, selected_wine, selected_win
         ], style={"marginTop": "20px"}, className="food-suggestions")
 
 
-    
-    return AlcoholContent_figure, pie_figure, food_suggestions_div
+    return AlcoholContent_figure, noOfRating_figure,scatter1_figure,  pie_figure, food_suggestions_div
 
 # Run the app
 if __name__ == '__main__':
